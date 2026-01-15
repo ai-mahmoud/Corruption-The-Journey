@@ -22,59 +22,30 @@ class CombatSystem:
         self.big_font = get_font(40)
         self.assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
         
-        # --- Aggressive Asset Cleaning Pipeline ---
-        def clean_background(surf, threshold=50):
-            # Locks surface for pixel access
-            surf = surf.convert() # Ensure format
-            width, height = surf.get_size()
-            
-            # Sample background color from top-left
-            bg_color = surf.get_at((0, 0))
-            
-            # If standard PNG transparency exists, we might skip this, 
-            # but user says they have artifacts, so we force clean if it LOOKS like a background.
-            # Simple Euclidean distance check
-            
-            # Create a mask of pixels to keep
-            new_surf = pygame.Surface((width, height), pygame.SRCALPHA)
-            new_surf.fill((0,0,0,0))
-            
-            # Iterate (Slow in Python but okay for 5 assets one-time load)
-            for x in range(width):
-                for y in range(height):
-                    c = surf.get_at((x, y))
-                    # Dist from bg
-                    dist = ((c.r - bg_color.r)**2 + (c.g - bg_color.g)**2 + (c.b - bg_color.b)**2)**0.5
-                    if dist > threshold:
-                        new_surf.set_at((x, y), c)
-            
-            return new_surf
-
-        def autocrop(surf):
-            rect = surf.get_bounding_rect()
-            if rect.width == 0 or rect.height == 0: return surf
-            return surf.subsurface(rect).copy()
-
+        # --- Robust Asset Loader V2 (Rolled Back) ---
         def load(name, scale=None, flip=False):
             path = os.path.join(self.assets_dir, name)
             try:
                 img = pygame.image.load(path)
                 
-                # 1. Clean Background (Threshold)
-                # Check if it has an alpha channel that is used. 
-                # If mostly opaque or user reports artifacts, run cleaner.
-                # Heuristic: If corners are opaque, it needs cleaning.
-                if img.get_at((0,0)).a == 255:
-                     img = clean_background(img)
+                # Check for existing transparency
+                has_transparency = False
+                if img.get_flags() & pygame.SRCALPHA:
+                     if img.get_at((0,0)).a == 0: has_transparency = True
                 
-                # 2. Autocrop (Remove empty space)
-                img = autocrop(img)
-                
-                # 3. Scale (Now we strictly scale the CONTENT)
+                if has_transparency:
+                    img = img.convert_alpha()
+                else:
+                    # Force opacity logic
+                    img = img.convert() 
+                    col = img.get_at((0, 0))
+                    img.set_colorkey(col)
+
+                # Scale
                 if scale: 
                     img = pygame.transform.scale(img, scale)
                 
-                # 4. Flip
+                # Flip
                 if flip: 
                     img = pygame.transform.flip(img, True, False)
                     
@@ -87,8 +58,7 @@ class CombatSystem:
 
         self.bg = load('bg_combat_forest.png', (SCREEN_WIDTH, SCREEN_HEIGHT))
         
-        # Sprites (MASSIVE SCALE UP)
-        # Using 300px because we autocropped, so this is 300px of pure content
+        # Sprites (Scaled Up to 300px+)
         self.spr_player_idle = load('spr_hatchling.png', (300, 300))
         self.spr_player_attack = load('spr_hatchling_attack.png', (350, 300))
         self.spr_player_hit = load('spr_hatchling_hit.png', (300, 300))
@@ -249,13 +219,12 @@ class CombatSystem:
         sx, sy = self.shake_offset
         
         # --- LAYER 1: Background ---
-        # Fixed position, independent of exploration
         target.blit(self.bg, (0 + sx, 0 + sy))
         
         # --- LAYER 2: Enemy (Right) ---
         if self.state != STATE_WIN and self.enemy['hp'] > 0:
             e_img = self.spr_enemy_idle
-            ex, ey = 800, 250 # Adjusted for larger size (350px)
+            ex, ey = 850, 250 # Adjusted X for 350px width
             
             if self.state == STATE_ENEMY_ACTION:
                  e_img = self.spr_enemy_attack
@@ -272,7 +241,7 @@ class CombatSystem:
 
         # --- LAYER 3: Player (Left) ---
         p_img = self.spr_player_idle
-        px, py = 100, 300 # Adjusted for larger size (300px)
+        px, py = 100, 300 # Adjusted X for 300px width
         
         if self.state == STATE_PLAYER_ACTION:
             if self.current_action == 'ATTACK':

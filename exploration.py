@@ -27,11 +27,11 @@ class Entity(pygame.sprite.Sprite):
 
 class Player(Entity):
     def __init__(self, x, y):
-        super().__init__(x, y, 'spr_hatchling.png', (64, 64))
+        super().__init__(x, y, 'spr_hatchling.png', (100, 100))
         self.velocity = pygame.math.Vector2(0, 0)
         self.speed = 4
         
-        self.hitbox = self.rect.inflate(-20, -30)
+        self.hitbox = self.rect.inflate(-30, -50)
         self.hitbox.center = self.rect.center
         self.steps_taken = 0
 
@@ -118,11 +118,12 @@ class Camera:
 class Obstacle(Entity):
     def __init__(self, x, y, type_name):
         if type_name == 'tree':
-            super().__init__(x, y, 'spr_tree.png', (96, 128))
-            self.hitbox = pygame.Rect(x + 30, y + 80, 36, 40)
+            super().__init__(x, y, 'spr_tree.png', (150, 200))
+            # Tighter hitbox at the base of the tree
+            self.hitbox = pygame.Rect(x + 50, y + 150, 50, 40)
         elif type_name == 'rock':
-            super().__init__(x, y, 'spr_rock.png', (64, 64))
-            self.hitbox = self.rect.inflate(-10, -20)
+            super().__init__(x, y, 'spr_rock.png', (120, 120))
+            self.hitbox = self.rect.inflate(-20, -30)
 
 class Exploration:
     def __init__(self, screen=None):

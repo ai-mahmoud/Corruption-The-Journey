@@ -28,8 +28,8 @@ class Cutscene:
                 return surf
 
         self.bg = load_image('bg_forest.png', (SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.egg_img = load_image('spr_egg.png', (128, 128))
-        self.hatchling_img = load_image('spr_hatchling.png', (64, 64))
+        self.egg_img = load_image('spr_egg.png', (256, 256))
+        self.hatchling_img = load_image('spr_hatchling.png', (128, 128))
         
         # Animation State
         self.stage = 0 
@@ -115,8 +115,8 @@ class Cutscene:
             self.screen.blit(overlay, (0, 0))
 
         # Center coordinates
-        cx = SCREEN_WIDTH // 2 - 64 # Half of egg width (128/2)
-        cy = SCREEN_HEIGHT // 2 - 64
+        cx = SCREEN_WIDTH // 2 - 128 # Half of egg width (256/2)
+        cy = SCREEN_HEIGHT // 2 - 128
 
         if self.stage in [1, 2]:
             # Draw Egg with offset
@@ -125,8 +125,8 @@ class Cutscene:
 
         elif self.stage == 3:
             # Draw Hatchling
-            hx = SCREEN_WIDTH // 2 - 32 # Half of hatchling width (64/2)
-            hy = SCREEN_HEIGHT // 2 - 32
+            hx = SCREEN_WIDTH // 2 - 64 # Half of hatchling width (128/2)
+            hy = SCREEN_HEIGHT // 2 - 64
             
             # Draw shell fragments (simulated) at bottom
             # pygame.draw.circle(self.screen, (100, 80, 120), (cx + 20, cy + 100), 10)
