@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+the_journey/
+savegame.json
+
+# Third-party asset packs dropped in for evaluation -- unclear license,
+# never checked into version control.
+*.zip

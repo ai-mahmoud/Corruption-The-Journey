@@ -1,0 +1,36 @@
+{
+  "image": "egg.png",
+  "pixel_width": 54,
+  "pixel_height": 22,
+  "scale": 6,
+  "anchor": [
+    9,
+    22
+  ],
+  "frames": {
+    "intact": [
+      [
+        0,
+        0,
+        18,
+        22
+      ]
+    ],
+    "cracked": [
+      [
+        18,
+        0,
+        18,
+        22
+      ]
+    ],
+    "broken": [
+      [
+        36,
+        0,
+        18,
+        22
+      ]
+    ]
+  }
+}

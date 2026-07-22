@@ -1,0 +1,28 @@
+{
+  "image": "master.png",
+  "pixel_width": 28,
+  "pixel_height": 22,
+  "scale": 6,
+  "anchor": [
+    7,
+    22
+  ],
+  "frames": {
+    "ember_small": [
+      [
+        0,
+        0,
+        14,
+        22
+      ]
+    ],
+    "ember_big": [
+      [
+        14,
+        0,
+        14,
+        22
+      ]
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "image": "undergrowth.png",
+  "pixel_width": 44,
+  "pixel_height": 30,
+  "scale": 3,
+  "anchor": [
+    11,
+    30
+  ],
+  "frames": {
+    "intact": [
+      [
+        0,
+        0,
+        22,
+        30
+      ]
+    ],
+    "withered": [
+      [
+        22,
+        0,
+        22,
+        30
+      ]
+    ]
+  }
+}

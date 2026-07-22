@@ -1,0 +1,28 @@
+{
+  "image": "heart.png",
+  "pixel_width": 14,
+  "pixel_height": 6,
+  "scale": 4,
+  "anchor": [
+    0,
+    0
+  ],
+  "frames": {
+    "full": [
+      [
+        0,
+        0,
+        7,
+        6
+      ]
+    ],
+    "empty": [
+      [
+        7,
+        0,
+        7,
+        6
+      ]
+    ]
+  }
+}
