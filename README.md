@@ -9,7 +9,7 @@ first real threat (dodge under pressure, a soft-fail stumble where an
 attack would be, a telegraphed beast) becoming the absorption-unlock beat
 instead of a death, a real 2-heart HP system with checkpoints and
 save/load, the game's first real verticality, and the reveal ending on the
-one deliberate warm-palette break in the whole game. See `Corruption: The
+one deliberate warm-palette break in the whole game. See `Corruption - The
 Journey — Chapter 0.md` for the script this is built from — the game
 stops exactly where the script says "Chapter 1 begins here," with an
 honest end card rather than fabricated content.
