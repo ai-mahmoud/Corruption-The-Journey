@@ -81,7 +81,7 @@ short hop, hold for a full jump. Left Shift to dodge (briefly invulnerable,
 short cooldown). J is the attack key — she has no attack yet, so it just
 leaves her briefly, vulnerably stumbling; that's intentional, not a bug.
 Esc pauses; in the pause menu, Up/Down (or W/S) to navigate, Enter/Space to
-select, Esc to back out.
+select, Esc to back out. F11 toggles fullscreen at any time, in any scene.
 
 ## Layout
 
@@ -264,15 +264,31 @@ one to tune — nothing else hardcodes these numbers.
   like ash" as actual motion, or plants that "pulse... out of sync" — the
   ash specks and silhouettes are static per room, not an animated particle
   system, since none exists yet.
-- Neither cutscene has audio — there's no audio pipeline yet, and Cutscene
-  2 is diegetic-only anyway (sound design, not music/voiceover).
+- There's still no sound *effects* — only looping background music
+  (`src/audio.py`). Cutscene 1 and Cutscene 2 are deliberately silent (no
+  track plays), matching the script's "near-total silence" through the
+  opening; music starts once gameplay begins.
 - She can walk past `CLEARING`'s beast toward the exit without engaging it
   at all; nothing forces the encounter to "complete," and reaching the
   checkpoint without ever being hit is fine too (it saves/heals regardless
   of whether absorption has been unlocked).
 - The Beat 5 end card really is the end — there's no Chapter 1 content
   behind it, by design (see the top of this README).
-- The pause menu's Settings screen is just a "-- no settings yet --"
-  placeholder — there's nothing to configure yet (no audio, no rebindable
-  keys). Hints is real content (a static control reminder), not a
-  placeholder.
+- The pause menu's Settings screen only has a music volume slider so far —
+  no rebindable keys yet. Hints is real content (a static control
+  reminder, including F11 for fullscreen), not a placeholder.
+
+## Audio
+
+Three looping tracks, picked by *role* rather than by scene, live in
+`assets/audio/` (`exploration.mp3`, `threat.mp3`, `warmth.mp3`) and are
+generated content, not part of this repo's MIT license (see `LICENSE`) —
+swap them for anything you have the rights to before distributing further.
+`src/audio.py` is a thin wrapper over `pygame.mixer.music`: rooms opt into
+a track via `data/rooms.py`'s `"music"` key (`"exploration"` for
+Waking Hollow/Forest Floor/Deeper Forest, `"threat"` for the Clearing's
+beast encounter), and `CutsceneMasterScene` switches to `"warmth"` for the
+Master reveal, fading out into the hard cut to black. Since
+`pygame.mixer.music` can only play one stream at a time, a track change is
+a fade-out-then-fade-in rather than a true crossfade — good enough at this
+scale, and avoids pulling in a second audio dependency.

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import pygame
 
+import audio
 import settings
 from scene import Scene
 
@@ -25,11 +26,10 @@ HINTS_LINES = [
     "Shift -- dodge (briefly invulnerable)",
     "Walk into an enemy -- absorb it",
     "Esc -- pause",
+    "F11 -- toggle fullscreen",
 ]
 
-SETTINGS_LINES = [
-    "-- no settings yet --",
-]
+VOLUME_STEP = 0.1
 
 
 class PauseMenuScene(Scene):
@@ -50,6 +50,10 @@ class PauseMenuScene(Scene):
         if self.view != "main":
             if event.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_SPACE, pygame.K_x):
                 self.view = "main"
+            elif self.view == "settings" and event.key in (pygame.K_LEFT, pygame.K_a):
+                audio.set_volume(audio.get_volume() - VOLUME_STEP)
+            elif self.view == "settings" and event.key in (pygame.K_RIGHT, pygame.K_d):
+                audio.set_volume(audio.get_volume() + VOLUME_STEP)
             return
 
         if event.key == pygame.K_ESCAPE:
@@ -87,7 +91,12 @@ class PauseMenuScene(Scene):
         if self.view == "main":
             self._draw_main_menu(surface)
         elif self.view == "settings":
-            self._draw_body("Settings", SETTINGS_LINES, surface)
+            volume_percent = round(audio.get_volume() * 100)
+            settings_lines = [
+                f"Music Volume: {volume_percent}%",
+                "Left/Right -- adjust",
+            ]
+            self._draw_body("Settings", settings_lines, surface)
         elif self.view == "hints":
             self._draw_body("Hints", HINTS_LINES, surface)
 

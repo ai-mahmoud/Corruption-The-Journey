@@ -70,6 +70,7 @@ DEEPER_FOREST = {
     "warm_glow": (1740, 60, 70, 400),
     "background": "deeper_forest",
     "reveal_zone": (1740, 380, 60, 100),
+    "music": "exploration",
 }
 
 # --- Beat 3: First Threat -------------------------------------------------
@@ -96,6 +97,7 @@ CLEARING = {
     # reaching this spot is what matters, not how she got here.
     "checkpoint_zone": CLEARING_EXIT,
     "next_room": DEEPER_FOREST,
+    "music": "threat",
 }
 
 # --- Beat 2: The Forest Floor --------------------------------------------
@@ -121,6 +123,7 @@ FOREST_FLOOR = {
     "background": "forest_floor",
     "exit_zone": (1810, 380, 90, 160),
     "next_room": CLEARING,
+    "music": "exploration",
 }
 
 # --- Beat 1: Waking -----------------------------------------------------
@@ -144,6 +147,7 @@ WAKING_HOLLOW = {
     "log_obstacle": HOLLOW_LOG,
     "tutorial_prompt": "Press Space to jump",
     "next_room": FOREST_FLOOR,
+    "music": "exploration",
 }
 
 # Rooms referenced by their "key" -- used by save/load and by respawn (both

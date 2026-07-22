@@ -20,6 +20,8 @@ behavior purely by including certain optional keys:
   - "log_obstacle" + "tutorial_prompt": shows the prompt text once, the
     first time the player nears the obstacle, then never again once
     she's passed it.
+  - "music": which looping background track (see src/audio.py's
+    TRACK_PATHS) plays in this room; defaults to "exploration" if absent.
 
 Takes a GameProgress alongside room_data -- hearts, whether absorption is
 unlocked, and the checkpoint all outlive any single room, so they're
@@ -31,6 +33,7 @@ from __future__ import annotations
 
 import pygame
 
+import audio
 import save_system
 import settings
 from attack_beast import AttackBeast
@@ -54,6 +57,8 @@ class GameplayScene(Scene):
         self.room_key = room_data["key"]
         self.progress = progress
         self.camera = Camera(self.room.world_width, self.room.world_height)
+
+        audio.play_track(room_data.get("music", "exploration"))
 
         self.player = Player(load_sprite("hatchling"), *self.room.player_spawn)
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import pygame
 
+import audio
 import settings
 from game_progress import GameProgress
 from scene import Scene
@@ -57,6 +58,8 @@ class CutsceneMasterScene(Scene):
 
         self.background = pygame.image.load(str(BACKGROUND_PATH)).convert()
 
+        audio.play_track("warmth")
+
         self._title_font = pygame.font.Font(None, 34)
         self._elapsed = 0.0
         self._ember_timer = 0.0
@@ -77,15 +80,19 @@ class CutsceneMasterScene(Scene):
         if self._skip_requested:
             self._skip_requested = False
             self._elapsed = REVEAL_DURATION + BLACK_DURATION
+            audio.stop()
             return None
 
+        was_in_reveal = self._elapsed < REVEAL_DURATION
         self._elapsed += dt
 
-        if self._elapsed < REVEAL_DURATION:
+        if was_in_reveal:
             self._ember_timer += dt
             if self._ember_timer >= EMBER_FLICKER_INTERVAL:
                 self._ember_timer -= EMBER_FLICKER_INTERVAL
                 self._ember_frame_is_small = not self._ember_frame_is_small
+            if self._elapsed >= REVEAL_DURATION:
+                audio.stop()  # fades out into the hard cut to black
 
         return None
 
