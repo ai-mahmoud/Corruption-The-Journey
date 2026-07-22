@@ -60,9 +60,12 @@ class PauseMenuScene(Scene):
             self._resume_requested = True
         elif event.key in (pygame.K_UP, pygame.K_w):
             self.selected_index = (self.selected_index - 1) % len(MAIN_ITEMS)
+            audio.play_sfx("menu_move")
         elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.selected_index = (self.selected_index + 1) % len(MAIN_ITEMS)
+            audio.play_sfx("menu_move")
         elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+            audio.play_sfx("menu_select")
             self._select_current_item()
 
     def _select_current_item(self) -> None:

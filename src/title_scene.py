@@ -67,6 +67,7 @@ class TitleScene(Scene):
 
         if self.view == "confirm_new_game":
             if event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                audio.play_sfx("menu_select")
                 self._new_game_requested = True
             elif event.key == pygame.K_ESCAPE:
                 self.view = "main"
@@ -76,9 +77,12 @@ class TitleScene(Scene):
             self.quit_requested = True
         elif event.key in (pygame.K_UP, pygame.K_w):
             self.selected_index = (self.selected_index - 1) % len(self._items)
+            audio.play_sfx("menu_move")
         elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.selected_index = (self.selected_index + 1) % len(self._items)
+            audio.play_sfx("menu_move")
         elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+            audio.play_sfx("menu_select")
             self._select_current_item()
 
     def _select_current_item(self) -> None:

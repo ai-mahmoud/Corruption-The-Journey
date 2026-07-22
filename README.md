@@ -35,6 +35,7 @@ python tools/generate_heart_icon.py
 python tools/generate_master_sprite.py
 python tools/generate_room_backgrounds.py
 python tools/generate_cutscene_backgrounds.py
+python tools/generate_sound_effects.py
 ```
 
 The sprite generators write PNG + JSON pairs into `assets/sprites/`; the
@@ -42,6 +43,8 @@ background generators write plain PNGs into `assets/backgrounds/` (no
 per-entity anchor/frame metadata needed for a static backdrop). Game code
 never draws raw rectangles for any of this — it loads the generated PNGs
 and scales them up with nearest-neighbor scaling for crisp pixel edges.
+`generate_sound_effects.py` is the same idea for audio — see "Audio"
+below.
 
 ## Building a standalone executable
 
@@ -271,10 +274,9 @@ one to tune — nothing else hardcodes these numbers.
   like ash" as actual motion, or plants that "pulse... out of sync" — the
   ash specks and silhouettes are static per room, not an animated particle
   system, since none exists yet.
-- There's still no sound *effects* — only looping background music
-  (`src/audio.py`). Cutscene 1 and Cutscene 2 are deliberately silent (no
-  track plays), matching the script's "near-total silence" through the
-  opening; music starts once gameplay begins.
+- Cutscene 1 and Cutscene 2 are deliberately silent (no music, no SFX),
+  matching the script's "near-total silence" through the opening; audio
+  starts once gameplay begins.
 - She can walk past `CLEARING`'s beast toward the exit without engaging it
   at all; nothing forces the encounter to "complete," and reaching the
   checkpoint without ever being hit is fine too (it saves/heals regardless
@@ -299,3 +301,21 @@ Master reveal, fading out into the hard cut to black. Since
 `pygame.mixer.music` can only play one stream at a time, a track change is
 a fade-out-then-fade-in rather than a true crossfade — good enough at this
 scale, and avoids pulling in a second audio dependency.
+
+Sound effects (`assets/audio/sfx/*.wav`) are procedurally synthesized by
+`tools/generate_sound_effects.py` — sine sweeps, filtered noise, and small
+bell-like chimes built with plain numpy (`tools/audio_synth.py`), no
+recorded or licensed audio, no synthesis at runtime. Same "scriptable,
+regeneratable, reviewable as code" pipeline as the Pillow sprite
+generators, just audio instead of pixels, and unlike the three music
+tracks these *are* covered by this repo's MIT license. Ten effects, each
+tied to a specific player/world event rather than a scene: `jump`/`land`
+(the moment a jump starts/lands), `dodge`/`stumble` (her two locked
+reaction states with no attack), `hit` (a beast strike landing), `absorb`
+(contact-absorbing an `Enemy`), `unlock` (the one-time absorption-unlock
+beat — deliberately bigger and longer than `absorb`), `checkpoint`
+(saving), and `menu_move`/`menu_select` (pause menu and title screen
+navigation). `src/audio.py`'s `play_sfx()` plays these as one-shot
+`pygame.mixer.Sound`s on their own channels, independent of the looping
+`pygame.mixer.music` track, so they never interrupt or get interrupted by
+the background music.

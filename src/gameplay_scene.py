@@ -199,6 +199,7 @@ class GameplayScene(Scene):
         if self.player.rect.colliderect(self.enemy.rect):
             self.player.start_absorb()
             self.enemy.begin_absorbed()
+            audio.play_sfx("absorb")
 
     def _check_beast_strike(self) -> None:
         assert self.attack_beast is not None
@@ -228,6 +229,7 @@ class GameplayScene(Scene):
         self.player.start_absorb()  # the existing lock/white-flash beat, reused as-is
         self.attack_beast.begin_absorbed()
         self._unlock_banner_timer = settings.UNLOCK_BANNER_DURATION
+        audio.play_sfx("unlock")
 
     def _trigger_death_and_respawn(self) -> None:
         self.progress.current_hearts = self.progress.max_hearts
@@ -241,6 +243,7 @@ class GameplayScene(Scene):
             self.progress.current_hearts = self.progress.max_hearts
             self.progress.checkpoint_room_key = self.room_key
             save_system.save_game(self.progress)
+            audio.play_sfx("checkpoint")
         self._was_in_checkpoint_zone = now_in
 
     def _update_hazards(self, dt: float) -> None:

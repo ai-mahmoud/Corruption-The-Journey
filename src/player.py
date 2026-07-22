@@ -16,6 +16,7 @@ from enum import Enum, auto
 
 import pygame
 
+import audio
 import settings
 from input import PlayerInput
 from physics import move_and_collide
@@ -95,6 +96,7 @@ class Player:
         self.dodge_timer = settings.DODGE_DURATION
         self.vx = settings.DODGE_SPEED * self.facing
         self.vy = 0.0
+        audio.play_sfx("dodge")
 
     def begin_stumble(self) -> None:
         """She has no attack yet -- reaching for one anyway leaves her
@@ -102,6 +104,7 @@ class Player:
         self.state = PlayerState.STUMBLE
         self.stumble_timer = settings.STUMBLE_DURATION
         self.vx = 0.0
+        audio.play_sfx("stumble")
 
     def begin_hit_reaction(self, direction: int) -> None:
         """A beast's strike connected: knockback away from it, then a brief
@@ -109,6 +112,7 @@ class Player:
         self.state = PlayerState.HIT
         self.hit_timer = settings.HIT_DURATION
         self.vx = settings.HIT_KNOCKBACK_SPEED * direction
+        audio.play_sfx("hit")
 
     def update(self, dt: float, input_state: PlayerInput, solids: list[pygame.Rect]) -> None:
         self.dodge_cooldown_timer = max(0.0, self.dodge_cooldown_timer - dt)
@@ -146,8 +150,11 @@ class Player:
         if collision.touched_top and self.vy < 0:
             self.vy = 0.0
 
+        was_on_ground = self.on_ground
         self.on_ground = collision.touched_bottom
         if self.on_ground:
+            if not was_on_ground:
+                audio.play_sfx("land")
             self.vy = 0.0
             self.coyote_timer = settings.COYOTE_TIME
 
@@ -176,6 +183,7 @@ class Player:
             self.jump_buffer_timer = 0.0
             self.coyote_timer = 0.0
             self.on_ground = False
+            audio.play_sfx("jump")
 
     def _update_horizontal(self, dt: float, input_state: PlayerInput) -> None:
         direction = 0
