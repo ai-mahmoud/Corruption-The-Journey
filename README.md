@@ -43,6 +43,26 @@ per-entity anchor/frame metadata needed for a static backdrop). Game code
 never draws raw rectangles for any of this — it loads the generated PNGs
 and scales them up with nearest-neighbor scaling for crisp pixel edges.
 
+## Building a standalone executable
+
+Packaging is build-time only, so it's kept out of `requirements.txt`
+(which lists what the game itself needs to *run*):
+
+```bash
+pip install pyinstaller
+pyinstaller CorruptionTheJourney.spec
+```
+
+This produces `dist/CorruptionTheJourney`, a single-file executable with
+`assets/` bundled inside it — nothing else needs to ship alongside it.
+`CorruptionTheJourney.spec` (checked into the repo) is the source of
+truth for the build, not the `pyinstaller` CLI flags — it pins
+`console=False` (no terminal window popping up next to the game on
+Windows) and bundles `assets` via `datas`. `src/settings.py` resolves
+asset paths through `sys._MEIPASS` when running as a frozen build, so the
+same code path works whether it's launched via `python main.py` or as the
+packaged executable.
+
 ## Run the game
 
 ```bash

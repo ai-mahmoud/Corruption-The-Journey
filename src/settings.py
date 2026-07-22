@@ -4,9 +4,15 @@ Nothing here runs; it's just numbers and paths so tuning "feel" never means
 hunting for magic numbers scattered through game code.
 """
 
+import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    # Running as a PyInstaller bundle -- bundled data files (assets/) are
+    # unpacked under sys._MEIPASS, not next to this source file.
+    PROJECT_ROOT = Path(sys._MEIPASS)
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SPRITES_DIR = PROJECT_ROOT / "assets" / "sprites"
 
 # --- Window ---------------------------------------------------------------

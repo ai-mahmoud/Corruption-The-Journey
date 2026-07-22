@@ -7,3 +7,8 @@ savegame.json
 # Third-party asset packs dropped in for evaluation -- unclear license,
 # never checked into version control.
 *.zip
+
+# PyInstaller build output -- regenerated from CorruptionTheJourney.spec,
+# not source.
+build/
+dist/
