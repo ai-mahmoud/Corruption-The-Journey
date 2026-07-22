@@ -1,0 +1,32 @@
+name: Build Windows executable
+
+# PyInstaller doesn't cross-compile -- a Windows .exe has to actually be
+# built on Windows, so this runs on a real windows-latest runner rather
+# than the Linux one everything else in CI would default to. Triggered
+# manually (not on every push) since this repo has no other CI yet and a
+# packaged build isn't needed for every commit.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build
+        run: pyinstaller CorruptionTheJourney.spec --noconfirm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CorruptionTheJourney-windows
+          path: dist/CorruptionTheJourney.exe

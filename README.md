@@ -71,6 +71,14 @@ asset paths through `sys._MEIPASS` when running as a frozen build, so the
 same code path works whether it's launched via `python main.py` or as the
 packaged executable.
 
+**Windows build:** PyInstaller doesn't cross-compile, so a `.exe` has to
+actually be built on Windows — either the same three commands above, run
+on a Windows machine, or `.github/workflows/build-windows.yml`, a manual
+GitHub Actions workflow (run it from the Actions tab, or
+`gh workflow run build-windows.yml`) that builds on a real
+`windows-latest` runner and uploads `CorruptionTheJourney.exe` as a build
+artifact — no Windows machine needed.
+
 ## Run the game
 
 ```bash
