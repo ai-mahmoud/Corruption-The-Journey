@@ -36,6 +36,11 @@ python tools/generate_master_sprite.py
 python tools/generate_room_backgrounds.py
 python tools/generate_cutscene_backgrounds.py
 python tools/generate_sound_effects.py
+
+# Optional: overwrites the Hatchling sprite above with a third-party pack
+# instead -- needs that pack's zip locally, see "The Hatchling's sprite"
+# further down. Skip this to keep the fully-procedural design.
+python tools/import_female_adventurer_sprite.py
 ```
 
 The sprite generators write PNG + JSON pairs into `assets/sprites/`; the
@@ -255,6 +260,43 @@ enemy palette, backgrounds sitting too dark to show their own depth
 banding, and a background-width rounding bug that could show a thin
 unrendered edge at max camera scroll.
 
+### The Hatchling's sprite: swapped for a third-party pack
+
+`assets/sprites/hatchling.png/json` currently comes from "The Female
+Adventurer - Free," a third-party asset pack, not the procedural
+generator above — `tools/generate_hatchling_sprite.py` still exists and
+still works (re-run it to go back to the original design), but
+`tools/import_female_adventurer_sprite.py` runs after it and overwrites
+its output.
+
+**Two caveats, both accepted knowingly, not overlooked:**
+- **Perspective mismatch.** The pack is a 3/4 top-down RPG asset (8
+  compass-direction facings — `Idle_Down`, `Walk_Left_Up`, etc.), not a
+  side-view platformer sprite like literally everything else in this game
+  (enemy, hazard, egg, Master). `Right_Down` was picked as the
+  least-mismatched facing and flipped horizontally for left, same as the
+  procedural sprite before it, but it's still a visibly different camera
+  convention grafted onto a side-view game — a deliberate compromise, not
+  a bug.
+- **Unknown license.** The pack's zip has no LICENSE or readme file
+  inside it, so its redistribution terms are unverified. It's excluded
+  from this repo's MIT grant (see `LICENSE`) the same way the three music
+  tracks are, and the raw pack itself is never committed here — only the
+  five cropped frames the game actually uses
+  (`tools/import_female_adventurer_sprite.py` reads straight out of the
+  original zip via Python's `zipfile`, so the full pack never touches the
+  working tree). Track down the actual terms before sharing this build
+  beyond a small private group.
+
+The import script crops `idle` (1 frame), `run_a`/`run_b` (2 walk-cycle
+frames), and `jump`/`fall` (2 frames from the jump strip) out of their
+6-frame animation strips, then crops all five to one *shared* bounding
+box (the union of each frame's own opaque pixels) rather than each
+frame's individual tight crop — that's what keeps her from visibly
+jittering side to side as her pose changes, since `Player.draw()`
+bottom/center-aligns each frame by its own width/height with no separate
+per-frame offset.
+
 ## Notes on the movement tuning
 
 All physics constants live in `src/settings.py`. The feel: faster
@@ -266,10 +308,14 @@ one to tune — nothing else hardcodes these numbers.
 
 ## Deliberate placeholders (not bugs)
 
-- All art is procedurally generated pixel art (Pillow scripts building
-  colored-rectangle sprite sheets), not hand-painted or AI-generated
-  images — a deliberate pipeline choice so every asset is scriptable,
-  regeneratable, and reviewable as code, not a capability gap being hidden.
+- Every sprite/background except the Hatchling is procedurally generated
+  pixel art (Pillow scripts building colored-rectangle sprite sheets), not
+  hand-painted or AI-generated images — a deliberate pipeline choice so
+  those assets are scriptable, regeneratable, and reviewable as code, not
+  a capability gap being hidden. The Hatchling herself is a hand-drawn
+  third-party sprite pack, swapped in on top of that pipeline (see "The
+  Hatchling's sprite" above) — including its perspective mismatch and
+  unresolved license, both knowingly accepted, not overlooked.
 - Backgrounds don't yet have the script's "drifting particulate corruption
   like ash" as actual motion, or plants that "pulse... out of sync" — the
   ash specks and silhouettes are static per room, not an animated particle
