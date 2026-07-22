@@ -69,12 +69,16 @@ packaged executable.
 python main.py
 ```
 
-It opens on Cutscene 1 (auto-advancing narration; any key advances a card
-early), then Cutscene 2 (the egg hatching, no input), then all four
-playable rooms in sequence (Waking Hollow → Forest Floor → Clearing →
-Deeper Forest), ending on the Master reveal and an honest end-of-content
-card. **Esc or X skips the current cutscene**; during gameplay, **Esc
-opens the pause menu** (Resume / Settings / Hints / Exit).
+It opens on the title screen (`src/title_scene.py`) — **New Game** (or
+**Continue**, shown only when a save exists) / **Exit**. New Game plays
+Cutscene 1 (auto-advancing narration; any key advances a card early), then
+Cutscene 2 (the egg hatching, no input), then all four playable rooms in
+sequence (Waking Hollow → Forest Floor → Clearing → Deeper Forest),
+ending on the Master reveal and an honest end-of-content card. Continue
+skips straight to the last checkpoint. Choosing New Game with a save
+already present asks for confirmation first — it erases that save.
+**Esc or X skips the current cutscene**; during gameplay, **Esc opens the
+pause menu** (Resume / Settings / Hints / Exit).
 
 **Controls:** Arrow keys / WASD to move, Space (or Up/W) to jump — tap for a
 short hop, hold for a full jump. Left Shift to dodge (briefly invulnerable,
@@ -98,8 +102,10 @@ the_journey/→ earlier abandoned prototypes, kept for reference only
 
 `src/scene.py` defines the minimal interface (`handle_event` / `update` /
 `draw`) that `Game.run()` switches between — a scene hands off to the next
-one by returning it from `update()`. Current scenes, in order:
-`CutsceneWorldScene` → `CutsceneHatchingScene` → `GameplayScene`.
+one by returning it from `update()`. `Game()` always opens on
+`TitleScene` (`src/title_scene.py`); from there, New Game leads into
+`CutsceneWorldScene` → `CutsceneHatchingScene` → `GameplayScene` (and
+Continue skips straight to `GameplayScene` at the saved checkpoint).
 
 `GameplayScene` is room-data-driven rather than one class per beat — see
 the optional keys in `data/rooms.py` (`enemy_spawn`, `hazards`,
@@ -168,10 +174,11 @@ real: running out of hearts respawns at `checkpoint_room_key`, healed.
 `data/rooms.py`'s `ROOM_REGISTRY` maps each room's `"key"` back to its
 data dict, so save files and respawns can name a room without serializing
 one. `CLEARING`'s `checkpoint_zone` (same spot as its `exit_zone`) heals
-to full and writes `savegame.json` on entry. A fresh `Game()` checks for
-that file first: if present, it skips both cutscenes and opens directly
-on the checkpoint. There's no "New Game" reset UI yet — delete
-`savegame.json` by hand to start over.
+to full and writes the save file on entry. `TitleScene` (`src/title_scene.py`)
+checks for that file: if present, it offers **Continue** (straight to the
+checkpoint, skipping both cutscenes) alongside **New Game** — which, if a
+save exists, asks for confirmation before erasing it and starting fresh
+from Cutscene 1.
 
 ### Beat 5: verticality, a gated-off path, and the reveal
 

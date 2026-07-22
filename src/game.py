@@ -5,12 +5,8 @@ from __future__ import annotations
 import pygame
 
 import audio
-import save_system
 import settings
-from cutscene_world import CutsceneWorldScene
-from game_progress import GameProgress
-from gameplay_scene import GameplayScene
-from rooms import ROOM_REGISTRY
+from title_scene import TitleScene
 
 
 class Game:
@@ -30,15 +26,7 @@ class Game:
         self.game_surface = pygame.Surface((settings.WINDOW_WIDTH, settings.WINDOW_HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = False
-
-        saved = save_system.load_game()
-        if saved is not None:
-            # Resuming: skip both cutscenes, open directly on the checkpoint.
-            progress = GameProgress(**saved)
-            checkpoint_room = ROOM_REGISTRY[progress.checkpoint_room_key]
-            self.scene = GameplayScene(checkpoint_room, progress)
-        else:
-            self.scene = CutsceneWorldScene(GameProgress())
+        self.scene = TitleScene()
 
     def run(self) -> None:
         self.running = True
