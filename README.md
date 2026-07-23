@@ -37,10 +37,10 @@ python tools/generate_room_backgrounds.py
 python tools/generate_cutscene_backgrounds.py
 python tools/generate_sound_effects.py
 
-# Optional: overwrites the Hatchling sprite above with a third-party pack
-# instead -- needs that pack's zip locally, see "The Hatchling's sprite"
-# further down. Skip this to keep the fully-procedural design.
-python tools/import_female_adventurer_sprite.py
+# Optional: overwrites the Hatchling sprite above with an AI-generated
+# spritesheet instead -- needs that sheet locally, see "The Hatchling's
+# sprite" further down. Skip this to keep the fully-procedural design.
+python tools/import_pixellab_hatchling_sprite.py
 ```
 
 The sprite generators write PNG + JSON pairs into `assets/sprites/`; the
@@ -268,42 +268,35 @@ enemy palette, backgrounds sitting too dark to show their own depth
 banding, and a background-width rounding bug that could show a thin
 unrendered edge at max camera scroll.
 
-### The Hatchling's sprite: swapped for a third-party pack
+### The Hatchling's sprite: an AI-generated spritesheet
 
-`assets/sprites/hatchling.png/json` currently comes from "The Female
-Adventurer - Free," a third-party asset pack, not the procedural
-generator above — `tools/generate_hatchling_sprite.py` still exists and
-still works (re-run it to go back to the original design), but
-`tools/import_female_adventurer_sprite.py` runs after it and overwrites
-its output.
+`assets/sprites/hatchling.png/json` currently comes from a PixelLab-
+generated side-view spritesheet, not the procedural generator above —
+`tools/generate_hatchling_sprite.py` still exists and still works
+(re-run it to go back to the fully-procedural design), but
+`tools/import_pixellab_hatchling_sprite.py` overwrites its output with
+five hand-picked frames from the generated sheet: `idle`, `run_a`/
+`run_b` (a genuine alternating-stride pair), `jump` (legs tucked,
+rising), and `fall` — the one approximation in the set, since the
+generated sheet didn't include a clean "descending through the air"
+pose; a tumbling/hair-blown pose was picked as the closest stand-in
+rather than a literal fall.
 
-**Two caveats, both accepted knowingly, not overlooked:**
-- **Perspective mismatch.** The pack is a 3/4 top-down RPG asset (8
-  compass-direction facings — `Idle_Down`, `Walk_Left_Up`, etc.), not a
-  side-view platformer sprite like literally everything else in this game
-  (enemy, hazard, egg, Master). `Right_Down` was picked as the
-  least-mismatched facing and flipped horizontally for left, same as the
-  procedural sprite before it, but it's still a visibly different camera
-  convention grafted onto a side-view game — a deliberate compromise, not
-  a bug.
-- **Unknown license.** The pack's zip has no LICENSE or readme file
-  inside it, so its redistribution terms are unverified. It's excluded
-  from this repo's MIT grant (see `LICENSE`) the same way the three music
-  tracks are, and the raw pack itself is never committed here — only the
-  five cropped frames the game actually uses
-  (`tools/import_female_adventurer_sprite.py` reads straight out of the
-  original zip via Python's `zipfile`, so the full pack never touches the
-  working tree). Track down the actual terms before sharing this build
-  beyond a small private group.
+All five are cropped to one *shared* bounding box (the union of each
+frame's own opaque pixels), not each frame's individual tight crop —
+same reasoning as the earlier art pass: `Player.draw()` bottom/center-
+aligns each frame by its own width/height with no separate per-frame
+offset, so a shared origin is what keeps her from visibly jittering side
+to side as her pose changes. `SCALE = 1` in the import script, unlike
+every procedural sprite's 2-3x — this source art is already
+higher-resolution/more detailed than the rest of the game's flat-shaded
+pixel art, so upscaling it further would just blur it.
 
-The import script crops `idle` (1 frame), `run_a`/`run_b` (2 walk-cycle
-frames), and `jump`/`fall` (2 frames from the jump strip) out of their
-6-frame animation strips, then crops all five to one *shared* bounding
-box (the union of each frame's own opaque pixels) rather than each
-frame's individual tight crop — that's what keeps her from visibly
-jittering side to side as her pose changes, since `Player.draw()`
-bottom/center-aligns each frame by its own width/height with no separate
-per-frame offset.
+**License note**, same treatment as the three generated music tracks:
+this is AI-generated content, not original art authored for this repo,
+so it's excluded from the MIT grant (see `LICENSE`) rather than assumed
+to be freely redistributable — check the generating tool's terms of
+service before distributing this build beyond a small private group.
 
 ## Notes on the movement tuning
 
@@ -320,10 +313,10 @@ one to tune — nothing else hardcodes these numbers.
   pixel art (Pillow scripts building colored-rectangle sprite sheets), not
   hand-painted or AI-generated images — a deliberate pipeline choice so
   those assets are scriptable, regeneratable, and reviewable as code, not
-  a capability gap being hidden. The Hatchling herself is a hand-drawn
-  third-party sprite pack, swapped in on top of that pipeline (see "The
-  Hatchling's sprite" above) — including its perspective mismatch and
-  unresolved license, both knowingly accepted, not overlooked.
+  a capability gap being hidden. The Hatchling herself is an AI-generated
+  spritesheet, swapped in on top of that pipeline (see "The Hatchling's
+  sprite" above) — including its unresolved license and one approximated
+  pose (`fall`), both knowingly accepted, not overlooked.
 - Backgrounds don't yet have the script's "drifting particulate corruption
   like ash" as actual motion, or plants that "pulse... out of sync" — the
   ash specks and silhouettes are static per room, not an animated particle

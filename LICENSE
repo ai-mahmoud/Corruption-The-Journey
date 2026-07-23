@@ -25,6 +25,6 @@ SOFTWARE.
 Not covered by the above (see README.md for details):
 - assets/audio/exploration.mp3, threat.mp3, warmth.mp3 -- generated music,
   separately licensed content.
-- assets/sprites/hatchling.png, hatchling.json -- derived from the
-  third-party pack "The Female Adventurer - Free"; its license terms are
-  unverified (no LICENSE/readme ships inside the pack).
+- assets/sprites/hatchling.png, hatchling.json -- cropped from an
+  AI-generated (PixelLab) spritesheet, not original art authored for
+  this repo; check that tool's terms of service before distributing.
